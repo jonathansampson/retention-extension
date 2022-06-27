@@ -1,0 +1,17 @@
+{
+    "name": "Brave",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "background": {
+        "type": "module",
+        "service_worker": "brave.js"
+    },
+    "icons": {
+        "128": "brave_128.png"
+    },
+    "permissions": [
+        "tabs",
+        "search",
+        "notifications"
+    ]
+}
