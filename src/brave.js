@@ -1,13 +1,15 @@
-chrome.runtime.onStartup.addListener( maybeWarn );
-chrome.runtime.onInstalled.addListener( maybeWarn );
+if ( !isBrave() ) {
+    chrome.runtime.onStartup.addListener( maybeWarn );
+    chrome.runtime.onInstalled.addListener( maybeWarn );
+}
+
+function isBrave () {
+    return navigator.userAgentData.brands.some( entry => {
+        return entry.brand === "Brave";
+    });
+}
 
 async function maybeWarn () {
-
-    /**
-     * TODO: Set default search engine to Brave Search
-     * This requires search.brave.com to be verifiably associated with this extension.
-     * https://developer.chrome.com/docs/extensions/mv3/settings_override/#search_provider
-     */
 
     const warning = {
         type: "basic",

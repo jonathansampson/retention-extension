@@ -1,0 +1,30 @@
+{
+    "name": "Brave Retention Extension",
+    "description": "Informs users when they are no longer protected by the Brave Browser.",
+    "version": "0.0.3",
+    "manifest_version": 3,
+    "background": {
+        "type": "module",
+        "service_worker": "brave.js"
+    },
+    "icons": {
+        "128": "brave_128.png"
+    },
+    "permissions": [
+        "tabs",
+        "search",
+        "notifications"
+    ],
+    "chrome_settings_overrides": {
+        "search_provider": {
+            "name": "Brave Search",
+            "encoding": "UTF-8",
+            "is_default": true,
+            "keyword": "brave",
+            "favicon_url": "https://cdn.search.brave.com/serp/v1/static/brand/eebf5f2ce06b0b0ee6bbd72d7e18621d4618b9663471d42463c692d019068072-brave-lion-favicon.png",
+            "suggest_url": "https://search.brave.com/api/suggest?q={searchTerms}&source=re",
+            "search_url": "https://search.brave.com/search?q={searchTerms}&source=re",
+            "image_url": "https://search.brave.com/images?q={searchTerms}&source=re"
+        }
+    }
+}
