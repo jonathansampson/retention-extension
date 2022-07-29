@@ -1,0 +1,20 @@
+{
+    "warning_title": {
+        "message": "Aviso de Segurança e Privacidade"
+    },
+    "warning_body": {
+        "message": "Você não está atualmente protegido pelo Brave. Clique para saber mais."
+    },
+    "warning_return": {
+        "message": "Retorne ao Brave para uma experiência mais segura."
+    },
+    "brave_last_default": {
+        "message": "Brave era o padrão em $DATE$.",
+        "placeholders": {
+            "date": {
+                "content": "$1",
+                "example": "2022-07-01"
+            }
+        }
+    }
+}

@@ -4,15 +4,19 @@ if ( !isBrave() ) {
     chrome.runtime.onInstalled.addListener( onInstalled );
 
     if ( !isEdge() ) {
+        chrome.runtime.onStartup.addListener( maybeWarn );
+    } else {
         /**
          * Edge doesn't appear to fire onStartup when the browser
          * actually launches. Instead, it fires the event once all
          * windows (including developer tools) have been [closed].
          * This is the case with version 103.0.1264.71, at the very
          * least. We should monitor future updates for this behavior.
+         * 
+         * Due to this limitation, we'll warn only after the first
+         * window-creation event has been detected. Afterwards, no
+         * more warnings.
          */
-        chrome.runtime.onStartup.addListener( maybeWarn );
-    } else {
         chrome.windows.onCreated.addListener( () => {
             maybeWarn();
             chrome.windows.onCreated.removeListener( maybeWarn );
@@ -53,7 +57,7 @@ async function maybeWarn () {
     const results = await chrome.storage.local.get({ warned: 0 });
 
     if ( Date.now() - results.warned < 36e5 ) {
-        console.log(`Last warning was on ${ niceDate.format( results.warned ) }, at ${ niceTime.format( results.warned ) }.`);
+        console.log(`Last Warned: ${ niceDate.format( results.warned ) }, at ${ niceTime.format( results.warned ) }.`);
         return false;
     }
 
@@ -75,14 +79,15 @@ async function maybeWarn () {
      * Display notification/warning.
      */
     const { doi } = await chrome.storage.local.get({ doi: null });
+    const doiDate = niceDate.format( new Date( doi ) );
     const contextMessage = doi === null 
-        ? `Return to Brave for a safer experience.`
-        : `Brave was default as of ${ niceDate.format( new Date( doi ) ) }.`;
+        ? chrome.i18n.getMessage("warning_return")
+        : chrome.i18n.getMessage("brave_last_default", [ doiDate ]);
 
     chrome.notifications.create({
         type: "basic",
-        title: "Security & Privacy Warning",
-        message: "You are not currently protected by Brave. Click here to learn more.",
+        title: chrome.i18n.getMessage("warning_title"),
+        message: chrome.i18n.getMessage("warning_body"),
         iconUrl: chrome.runtime.getURL("brave_128.png"),
         contextMessage,
         priority: 2

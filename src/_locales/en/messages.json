@@ -1,0 +1,24 @@
+{
+    "warning_title": {
+        "message": "Security & Privacy Warning",
+        "description": "Shown as the title of the pop-up notification warning."
+    },
+    "warning_body": {
+        "message": "You are not currently protected by Brave. Click here to learn more.",
+        "description": "Shown as the primary body text of the pop-up notification warning."
+    },
+    "warning_return": {
+        "message": "Return to Brave for a safer experience.",
+        "description": "One of a few possible, smaller context messages, shown below the main message."
+    },
+    "brave_last_default": {
+        "message": "Brave was the default as of $DATE$.",
+        "description": "One of a few possible, smaller context messages, shown below the main message.",
+        "placeholders": {
+            "date": {
+                "content": "$1",
+                "example": "2022-07-01"
+            }
+        }
+    }
+}
