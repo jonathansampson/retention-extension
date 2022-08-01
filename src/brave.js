@@ -1,4 +1,13 @@
-if ( !isBrave() ) {
+if ( isBrave() ) {
+
+    /**
+     * If the user has somehow installed this extension within
+     * the Brave Browser, we'll auto-uninstall.
+     */
+
+     chrome.management.uninstallSelf();
+
+} else {
 
     chrome.runtime.onInstalled.addListener( maybeWarn );
     chrome.runtime.onInstalled.addListener( onInstalled );
@@ -37,6 +46,44 @@ function hasBrand ( brandName ) {
     return navigator.userAgentData.brands.some( entry => {
         return entry.brand.toLowerCase() === brandName.toLowerCase();
     });
+}
+
+async function getBrowserNameAndVersion () {
+
+    const results = {
+        name: undefined,
+        version: undefined
+    };
+
+    for ( let entry of navigator.userAgentData.brands ) {
+
+        if ( /^chromium$/i.test( entry.brand ) ) {
+            results.base = {
+                chromium: true,
+                version: entry.version
+            };
+        } else if ( !/^.*not.*a.*brand.*$/i.test( entry.brand ) ) {
+            results.name = entry.brand;
+            results.version = entry.version;
+        }
+
+    }
+
+    /**
+     * It's possible that we still have not identified the
+     * browser. Vivaldi 5.3.2679.70, for example, does not
+     * provide a brand entry in navigator.userAgentData. It
+     * does, however, attach a vivExtData property to tabs.
+     * 
+     * https://github.com/borsini/chrome-otto-tabs/pull/11#issue-1268032745
+     */
+    if ( !results.name ) {
+        const [ sampleTab ] = await chrome.tabs.query({});
+        if ( sampleTab.vivExtData ) results.name = "Vivaldi";
+    }
+
+    return results;
+
 }
 
 async function onInstalled () {

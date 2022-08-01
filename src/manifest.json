@@ -1,7 +1,7 @@
 {
     "name": "Brave Retention Extension",
     "description": "Informs users when they are no longer protected by the Brave Browser.",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "manifest_version": 3,
     "background": {
         "type": "module",
