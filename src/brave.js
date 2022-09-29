@@ -93,10 +93,20 @@ async function onInstalled () {
     }
 }
 
+const utils = {
+    niceTime: new Intl.DateTimeFormat( undefined, { timeStyle: "short" }),
+    niceDate: new Intl.DateTimeFormat( undefined, { dateStyle: "medium" })
+};
+
 async function maybeWarn () {
 
-    const niceDate = new Intl.DateTimeFormat( undefined, { dateStyle: "medium" });
-    const niceTime = new Intl.DateTimeFormat( undefined, { timeStyle: "short" });
+    /**
+     * A browser may be running in the background, meaning
+     * no windows are visible. Don't show notifications if
+     * this is the case.
+     */
+    const windows = await chrome.windows.getAll({ populate: true });
+    if ( windows.length < 1 ) return;
 
     /**
      * Limit notifications to a maximum of 1 per hour.
@@ -104,7 +114,9 @@ async function maybeWarn () {
     const results = await chrome.storage.local.get({ warned: 0 });
 
     if ( Date.now() - results.warned < 36e5 ) {
-        console.log(`Last Warned: ${ niceDate.format( results.warned ) }, at ${ niceTime.format( results.warned ) }.`);
+        let d = utils.niceDate.format( results.warned );
+        let t = utils.niceTime.format( results.warned );
+        console.log(`Last Warned: ${ d }, at ${ t }.`);
         return false;
     }
 
@@ -140,19 +152,22 @@ async function maybeWarn () {
         priority: 2
     });
 
-    /**
-     * Open a special page which explains to the user that they
-     * are no longer using Brave, and offers steps for returning
-     * to the Brave Browser. If this page is already opened (for
-     * example, from a previous session), then switch to it.
-     */
-    const helpPageURL = "https://brave.com/latest/";
-    const [ infoTab ] = await chrome.tabs.query({ url: helpPageURL });
-
-    if ( infoTab ) {
-        chrome.tabs.update( infoTab.id, { active: true });
-    } else {
-        chrome.tabs.create({ active: true, url: helpPageURL });
-    }
+    chrome.notifications.onClicked.addListener( async notificationId => {
+        chrome.notifications.clear( notificationId );
+        /**
+         * Open a special page which explains to the user that they
+         * are no longer using Brave, and offers steps for returning
+         * to the Brave Browser. If this page is already opened (for
+         * example, from a previous session), then switch to it.
+         */
+        const helpPageURL = "https://support.brave.com/hc/en-us/articles/360020406572-How-do-I-set-Brave-to-be-my-Default-Browser-";
+        const [ infoTab ] = await chrome.tabs.query({ url: helpPageURL });
+    
+        if ( infoTab ) {
+            chrome.tabs.update( infoTab.id, { active: true });
+        } else {
+            chrome.tabs.create({ active: true, url: helpPageURL });
+        }
+    });
 
 }
